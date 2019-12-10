@@ -1,0 +1,119 @@
+/**
+ * Turboslider - An open source jquery slider
+ *
+ * @author      Baianat
+ * @copyright   2015 Baianat
+ * @link        http://www.baianat.com
+ * @license     MIT permissive license http://www.baianat.com
+ * @version     1.0.0
+ * @package     TurboSlider
+ * 
+ */
+
+
+/* Main Wrapper for turbo slider */
+
+.TurboWrapper {
+    position: relative;
+}
+
+/* Main item for turbo slider better to leave this settings unmodified */
+
+.item {
+    -moz-user-select : none ;
+    user-select: none; 
+    opacity: 1 ;
+}
+
+
+/* Turbo navigation container */
+
+.slider-navigation
+{
+    text-align: center;
+}
+
+
+/* Turbo default dot container class */
+
+.dotsClass
+{
+    margin-top: 5px ;
+}
+
+/* Turbo default dot item class */
+
+
+.dotClass
+{
+    border-radius: 50%; 
+    background: #525252;
+    width: 8px; 
+    height: 8px;
+    margin:5px;
+    display:inline-block;
+    transition: 0.3s all;
+}
+
+/* Turbo active dot item class */
+
+.dotClass.active 
+{
+    background: rgba(0,0,0,.3);
+}
+
+/* Turbo vertical dots class */
+
+.vertical-dots {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: rotate(90deg);
+    margin: 0;
+}
+
+
+/* Turbo video wrapper class */
+
+.turbo-video-wrapper {
+    position: relative;
+    height: 100%;
+}
+
+/* Turbo video thumb class */
+
+.turbo-video-thumb {
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+/* Turbo video play class */
+
+.turbo-video-play {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    background: #CCC none repeat scroll 0% 0%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -18px;
+    margin-top: -14px;
+}
+
+/* Turbo default navigation next and prev */
+
+.turbo-prev, .turbo-next {
+    border: 2px solid #FE623C;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    margin: 5px;
+    padding: 6px 20px;
+    -moz-user-select: none;
+}
+
