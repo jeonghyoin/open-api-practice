@@ -35,7 +35,6 @@
 	<div class="wrapper ">
 		<div class="nav-menu">
 			<nav class="menu">
-			
 				<!-- Menu navigation start -->
 				<div class="nav-container">
 					<ul class="main-menu">
@@ -225,19 +224,6 @@
 				</div>
 
 				<section class="bal-section container" id="cardList">
-					<div class="balance-card mb-15">
-						<div class="d-flex align-items-center">
-	                        <div class="d-flex flex-grow">
-	                          <div class="mr-auto">
-	                            <h1 class="b-val"></h1>
-	                            <p class="g-text mb-10">Total Balance</p>
-	                          </div>
-	                          <div class="ml-auto align-self-end">
-                                  <button>잔액조회</button>
-	                          </div>
-	                        </div>
-	                     </div>
-					</div>
 				</section>
 
 				<footer>
@@ -267,12 +253,9 @@
 
 	<!-- JQuery library file. requared all pages -->
 	<script src="js/jquery-3.2.1.min.js"></script>
-
 	<!-- Swiper JS -->
     <script src="js/swiper.min.js"></script>
-
-	 <!-- Initialize Swiper -->
- 	
+	<!-- Initialize Swiper -->
   	<!-- Flot Charts -->
 	<script src="plugins/c3-chart/c3.min.js"></script>
 	<script src="plugins/c3-chart/d3.min.js"></script>
@@ -285,7 +268,6 @@
 	<script src="plugins/flot/jquery.flot.resize.min.js"></script>
     <!-- Sparkline-->
     <script src="plugins/jquery-sparkline/jquery.sparkline.js"></script>
-
 	<!-- Template global script file. requared all pages -->
 	<script src="js/app-charts.js"></script>
 	<script src="js/global.script.js"></script>
@@ -306,17 +288,18 @@
                         $("#cardList").append(
                             '<div class="balance-card mb-15">'+
 						        '<div class="d-flex align-items-center">'+
-	                        '<div class="d-flex flex-grow">'+
-                                    '<div class="mr-auto">' +
-                                            '<h1 class="b-val">'+data.res_list[i].account_alias+'</h1>'+
-                                        '<p class="g-text mb-10">'+data.res_list[i].fintech_use_num+'</p>'+
-                                            '</div>'+
-                                    '<div class="ml-auto align-self-end">'+
-                                            '<button>잔액조회</button>'+
-                                            '</div>'+
-                                            '</div>'+
-                                            '</div>'+
-                                    '</div>'
+	                        	'<div class="d-flex flex-grow">'+
+                            		'<div class="mr-auto">' +
+                                		'<h1 class="b-val">'+data.res_list[i].account_alias+'</h1>'+
+                             		   '<p class="g-text mb-10">'+data.res_list[i].fintech_use_num+'</p>'+
+                           			'</div>'+
+                            		'<div class="ml-auto align-self-end">'+
+										'<a href="/balance?fin_use_num='+data.res_list[i].fintech_use_num+'">잔액조회</a>'+
+										'<a href="/qrcode?fin_use_num='+data.res_list[i].fintech_use_num+'">QR생성</a>'+
+                            		'</div>'+
+                          		  '</div>'+
+                           		'</div>'+
+                            '</div>'
                         )
                     }    
                 }
@@ -324,8 +307,6 @@
 
         }
     </script>
-
-
 </body>
 
 </html>

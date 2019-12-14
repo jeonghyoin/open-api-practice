@@ -17,6 +17,8 @@ app = express();
 var request = require('request');
 var jwt = require('jsonwebtoken');
 var tokenKey = "fintech!@#$%"
+
+//토큰 인증 모듈
 var auth = require('./lib/auth')
 
 var port = process.env.PORT || 3000;
@@ -151,11 +153,10 @@ app.post('/user', function(req, res){
     });      
 })
 
-//로그인
+//로그인, jwt 추가
 app.post('/login', function(req, res){
     var userEmail = req.body.userEmail;
     var userPassword = req.body.userPassword;
-
     connection.query('SELECT * FROM user WHERE email = ?',
     [userEmail], function (error, results, fields) {
         if (error) throw error;
@@ -191,7 +192,7 @@ app.post('/login', function(req, res){
     });      
 })
 
-
+//사용자 인증정보 활용 요청
 app.post('/userData', auth, function(req, res){
     var userId = req.decoded.userId
     connection.query('SELECT * FROM user WHERE id = ?', [userId], function (error, results, fields) {
@@ -215,6 +216,73 @@ app.post('/userData', auth, function(req, res){
         });
     });      
 })
+
+//잔액 조회
+app.post('/balance',auth, function(req, res){
+    var userId = req.decoded.userId
+    var finusenum = req.body.fin_use_num;
+
+    //랜덤 transId 생성
+    var countnum = Math.floor(Math.random() * 1000000000) + 1;
+    var transId = "T991599190U" + countnum;
+
+    connection.query('SELECT * FROM user WHERE id = ?', [userId], function (error, results, fields) {
+        if (error) throw error;
+        var option = {
+            method : "get",
+            url : "https://testapi.openbanking.or.kr/v2.0/account/balance/fin_num",
+            //헤더에 토큰 삽입
+            headers : {
+                Authorization : "Bearer " + results[0].accesstoken
+            },
+            //쿼리 스트링
+            qs : {
+                bank_tran_id :  transId,
+                fintech_use_num : finusenum,
+                tran_dtime : "20191212140000"
+            }
+        }
+        request(option, function (error, response, body) {
+            console.log(body);
+            var resultObject = JSON.parse(body);
+            res.json(resultObject);
+        });
+    });      
+})
+
+//거래 내역
+app.post('/transaction',auth, function(req, res){
+    var userId = req.decoded.userId
+    var finusenum = req.body.fin_use_num;
+    var countnum = Math.floor(Math.random() * 1000000000) + 1;
+    var transId = "T991599190U" + countnum;
+    connection.query('SELECT * FROM user WHERE id = ?', [userId], function (error, results, fields) {
+        if (error) throw error;
+        var option = {
+            method : "get",
+            url : "https://testapi.openbanking.or.kr/v2.0/account/transaction_list/fin_num",
+            headers : {
+                Authorization : "Bearer " + results[0].accesstoken
+            },
+            qs : {
+                bank_tran_id :  transId,
+                fintech_use_num : finusenum,
+                inquiry_type : 'A',
+                inquiry_base : 'D',
+                from_date : '20190101',
+                to_date : '20190101',
+                sort_order : 'D',
+                tran_dtime : "20191212140000"
+            }
+        }
+        request(option, function (error, response, body) {
+            console.log(body);
+            var resultObject = JSON.parse(body);
+            res.json(resultObject);
+        });
+    });      
+})
+
 
 app.listen(port);
 console.log("Listening on port ", port);
