@@ -71,10 +71,12 @@ app.get('/signup', function(req, res){
     res.render('signup');
 })
 
+//qr 코드 생성
 app.get('/qrcode', function(req, res){
     res.render('qrcode');
 })
 
+//qr 코드 리더기
 app.get('/qrcodeReader', function(req, res){
     res.render('qrcodeReader')
 })
