@@ -285,6 +285,49 @@ app.post('/transaction',auth, function(req, res){
     });      
 })
 
+//출금
+app.post('/withdrawQR', auth, function(req, res){
+    var finusenum = req.body.qrFin;
+    var userId = req.decoded.userId
+    var countnum = Math.floor(Math.random() * 1000000000) + 1;
+    var transId = "T991599190U" + countnum;
+    connection.query('SELECT * FROM user WHERE id = ?', [userId], function (error, results, fields) {
+        if (error) throw error;
+        var option = {
+            method : "post",
+            url : "https://testapi.openbanking.or.kr/v2.0/transfer/withdraw/fin_num",
+            headers : {
+                Authorization : "Bearer " + results[0].accesstoken
+            },
+            json : { //API 문서 참고
+                bank_tran_id : transId,
+                cntr_account_type : "N",
+                cntr_account_num : "7832932596",
+                dps_print_content : "쇼핑몰환불",
+                fintech_use_num : "199159919057870978715901",
+                wd_print_content : "쇼핑몰환불",
+                tran_amt : "1000",
+                req_client_fintech_use_num : "199159919057870978715901",
+                tran_dtime : "20190910101921",
+                req_client_name : "진상언",
+                req_client_num : "7832932596",
+                transfer_purpose : "TR"
+            }
+        }
+        request(option, function (error, response, body) {
+            console.log(body);
+            var resultObject = body;
+            if(resultObject.rsp_code == "A0000"){
+                //예외처리
+                res.json(1);
+            } 
+            else {
+                res.json(resultObject.rsp_code)
+            }
+
+        });
+    });
+});
 
 app.listen(port);
 console.log("Listening on port ", port);
