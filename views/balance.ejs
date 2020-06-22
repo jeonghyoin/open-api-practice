@@ -162,7 +162,7 @@
 	var qs = getQueryStringObject();
 	var jwtToken = sessionStorage.getItem('jwtToken');
 	$.ajax({
-		url:'http://localhost:3000/balance',
+		url:'http://80803000/balance',
 		type : 'POST',
 		headers : {
 			'x-access-token' : jwtToken
@@ -177,7 +177,7 @@
 	})
 
 	$.ajax({
-		url:'http://localhost:3000/transaction',
+		url:'http://localhost:8080/transaction',
 		type : 'POST',
 		headers : {
 			'x-access-token' : jwtToken

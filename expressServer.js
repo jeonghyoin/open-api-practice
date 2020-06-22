@@ -12,6 +12,8 @@ connection.connect();
 var express = require("express"),
 app = express();
 
+var currentUser = '';
+
 //jwt
 //npm install jsonwebtoken
 var request = require('request');
@@ -21,7 +23,7 @@ var tokenKey = "fintech!@#$%"
 //토큰 인증 모듈
 var auth = require('./lib/auth')
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8080;
 app.use(express.static(__dirname + '/public'));
 
 //템플렛 추가
@@ -86,25 +88,35 @@ app.get('/authTest', auth, function(req, res){
 })
 
 //토큰 발급 - 3-legged
-//access token 인증 요청 
+//access token 인증 요청
 app.get('/authResult', function(req, res){
-    var authCode = req.query.code
+    var authCode = req.query.code;
     var option = {
         method : "POST",
         url : "https://testapi.openbanking.or.kr/oauth/2.0/token",
         headers : "",
         form : {
             code : authCode,
-            client_id : 'q7kH44ThJwjpvNRg0BbJvE1yxvx5X53DKz1rNgPF',
-            client_secret : 'yVT6irMr2h4ZTHzZY7sDpbvhm1nlOzr4nP7DYRVy',
-            redirect_uri : 'http://localhost:3000/authResult',
+            client_id : 'mZDDm2gP92FqwdD248kVm83PTJnlJKDIiTwaSSFu',
+            client_secret : 'ed6EcMwoZ11mlHRRzmkmhD33w1Zg4zQ7ggbr0kPj',
+            redirect_uri : 'http://localhost:8080/authResult',
             grant_type : 'authorization_code'
         }
     }
     request(option, function (error, response, body) {
-        var accessRequestResult = JSON.parse(body);
-        //자식창 데이터 처리
-        res.render('resultChild', {data : accessRequestResult} )        
+        var result = JSON.parse(body);
+        var accesstoken = result.access_token;
+        var refreshtoken = result.refresh_token;
+        var userseqno = result.user_seq_no;
+        console.log(result);
+
+        connection.query('UPDATE fintech.user SET ' +
+        'accesstoken=?, refreshtoken=?, userseqno=? WHERE email=?',
+        [accesstoken, refreshtoken, userseqno, currentUser], function (error, results, fields) {
+            if (error) throw error;     
+        });
+        
+        res.render('login');
     });
 })
 
@@ -115,25 +127,25 @@ app.get('/auth', function(req, res) {
         url : "https://testapi.openbanking.or.kr/oauth/2.0/token",
         headers : "",
         form : {
-            client_id : 'q7kH44ThJwjpvNRg0BbJvE1yxvx5X53DKz1rNgPF',
-            client_secret : 'yVT6irMr2h4ZTHzZY7sDpbvhm1nlOzr4nP7DYRVy',
+            client_id : 'mZDDm2gP92FqwdD248kVm83PTJnlJKDIiTwaSSFu',
+            client_secret : 'ed6EcMwoZ11mlHRRzmkmhD33w1Zg4zQ7ggbr0kPj',
             scope : 'oob',
             grant_type : 'client_credentials'
         }
     }
     request(option, function (error, response, body) {
-        console.log(body);       
+        console.log('/auth' + body);       
     });
 })
 
 app.get("/member", function (req, res) {
-    var resu = "아무것도 없습니다.";
+    var resu = "데이터가 존재하지 않습니다.";
     connection.query('SELECT * FROM fintech.member', function (error, results, fields) {
         if (error) throw error;
-        console.log(results);
-        resu = results
+        console.log('/member' + results);
+        resu = results;
         res.send(resu);
-    });      
+    });
 });
 
 //회원가입 데이터 처리
@@ -141,18 +153,14 @@ app.post('/user', function(req, res){
     var name = req.body.name;
     var email = req.body.email;
     var password = req.body.password;
-    var accessToken = req.body.accessToken;
-    var refreshToken = req.body.refreshToken;
-    var userseqno = req.body.userseqno;
-    console.log(userseqno);
-
-    connection.query('INSERT INTO user ' +
-    '(name, email, password, accesstoken, refreshtoken, userseqno) VALUES (?,?,?,?,?,?)',
-    [name, email, password, accessToken, refreshToken, userseqno], function (error, results, fields) {
+    
+    connection.query('INSERT INTO fintech.user ' +
+    '(name, email, password) VALUES (?,?,?)',
+    [name, email, password], function (error, results, fields) {
         if (error) throw error;
-        console.log(results);       
-        res.json(1) 
-    });      
+        currentUser = email;
+        res.json(1);
+    });
 })
 
 //로그인, jwt 추가
@@ -162,33 +170,28 @@ app.post('/login', function(req, res){
     connection.query('SELECT * FROM user WHERE email = ?',
     [userEmail], function (error, results, fields) {
         if (error) throw error;
-        console.log(results);
+
         if(results.length < 1){
-            console.log('사용자가 없습니다')
-        }
-        else {
-            console.log(results[0].password, userPassword) ;
-            if(results[0].password == userPassword){
-                jwt.sign(
-                    {
-                        userName : results[0].name,
-                        userId : results[0].id,
-                        userEmail : results[0].email
-                    },
-                    tokenKey,
-                    {
-                        expiresIn : '10d',
-                        issuer : 'fintech.admin',
-                        subject : 'user.login.info'
-                    },
-                    function(err, token){
-                        console.log('로그인 성공', token)
-                        res.json(token)
-                    }
-                )
+            console.log('사용자가 존재하지 않습니다.');
+        } else {
+            if(results[0].password == userPassword) {
+                jwt.sign({
+                    userName : results[0].name,
+                    userId : results[0].id,
+                    userEmail : results[0].email
+                },
+                tokenKey,
+                {
+                    expiresIn : '10d',
+                    issuer : 'fintech.admin',
+                    subject : 'user.login.info'
+                },
+                function(err, token){
+                    res.json(token);
+                });
             }
-            else{
-                console.log('비밀번호 틀렸습니다.');
+            else {
+                console.log('비밀번호가 일치하지 않습니다.');
             }    
         } 
     });      
@@ -199,7 +202,7 @@ app.post('/userData', auth, function(req, res){
     var userId = req.decoded.userId
     connection.query('SELECT * FROM user WHERE id = ?', [userId], function (error, results, fields) {
         if (error) throw error;
-        console.log(results);
+        console.log('/userData' + results);
         var option = {
             method : "get",
             url : "https://testapi.openbanking.or.kr/v2.0/user/me",
@@ -212,7 +215,7 @@ app.post('/userData', auth, function(req, res){
             }
         }
         request(option, function (error, response, body) {
-            console.log(body);
+            console.log('/userData' + body);
             var resultObject = JSON.parse(body);
             res.json(resultObject);
         });
@@ -245,7 +248,7 @@ app.post('/balance',auth, function(req, res){
             }
         }
         request(option, function (error, response, body) {
-            console.log(body);
+            console.log('/balanc' + body);
             var resultObject = JSON.parse(body);
             res.json(resultObject);
         });
@@ -278,7 +281,7 @@ app.post('/transaction',auth, function(req, res){
             }
         }
         request(option, function (error, response, body) {
-            console.log(body);
+            console.log('/transaction' + body);
             var resultObject = JSON.parse(body);
             res.json(resultObject);
         });
@@ -315,7 +318,7 @@ app.post('/withdrawQR', auth, function(req, res){
             }
         }
         request(option, function (error, response, body) {
-            console.log(body);
+            console.log('withdrawQR' + body);
             var resultObject = body;
             if(resultObject.rsp_code == "A0000"){
                 //예외처리

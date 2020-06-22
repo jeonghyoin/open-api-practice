@@ -152,7 +152,7 @@
 		scanner.addListener('scan', function (content) {
         console.log(content)
         $.ajax({
-			url: 'http://localhost:3000/withdrawQR',
+			url: 'http://localhost:8080/withdrawQR',
 			type: 'POST',
 			headers: {
 				'x-access-token': sessionStorage.getItem('jwtToken')

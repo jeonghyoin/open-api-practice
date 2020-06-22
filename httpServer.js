@@ -1,5 +1,5 @@
 //HTTP 클래스를 사용한 서버 구성
-//3000번 포트, http://localhost:3000/으로 실행
+//8080번 포트, http://localhost:8080/으로 실행
 var http = require("http");
 var weather = require('./xmlToJsExample');
 

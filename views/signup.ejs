@@ -4,24 +4,20 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
-	<title>Crypto Mobile Template</title>
+	<title>Sign up</title>
 
 	<!-- Google font file. If you want you can change. -->
 	<link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,900" rel="stylesheet">
-
 	<!-- Fontawesome font file css -->
 	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
-
 	<!-- Template global css file. Requared all pages -->
 	<link rel="stylesheet" type="text/css" href="css/global.style.css">
 </head>
 
 <body>
-	
 	<div class="wrapper">
 		<div class="nav-menu">
 			<nav class="menu">
-				
 				<!-- Menu navigation start -->
 				<div class="nav-container">
 					<ul class="main-menu">
@@ -54,7 +50,6 @@
 								<li><a href="forgot-password.html" data-loader="show">Forgot Password</a></li>
 							</ul>
 						</li>
-						
 						<li>
 							<a href="javascript:void(0);"><img src="img/content/icons/8.png" alt=""> <strong>Wizards</strong> <span class="fa fa-angle-down"></span></a>
 							<ul>
@@ -108,55 +103,45 @@
 			<!-- Header area end -->
 			<!-- Page content start -->
 			<main>
-				<div class="container">
-					<div class="form-divider"></div>
-					<div class="form-divider"></div>
-					<div class="form-label-divider"><span>OR</span></div>
-					<div class="form-divider"></div>
-
-					<div class="form-row-group with-icons">
-						<div class="form-row no-padding">
-							<i class="fa fa-user"></i>
-							<input type="text" id="userName" class="form-element" placeholder="Username" value="john doe">
-						</div>
-						<div class="form-row no-padding">
-							<i class="fa fa-envelope"></i>
-							<input type="email" id="userEmail" class="form-element" placeholder="Email" value="johndoe@example.com">
-						</div>
-						<div class="form-row no-padding">
-							<i class="fa fa-lock"></i>
-							<input type="password" id="userPassword" class="form-element" placeholder="Password" value="123456">
-						</div>
-						<div class="form-row no-padding">
-                                <i class="fa fa-user"></i>
-                                <input type="text" id="accessToken" name="aaa" class="form-element" placeholder="accessToken" value="">
-                        </div>
-                        <div class="form-row no-padding">
-                                <i class="fa fa-user"></i>
-                                <input type="text" id="refreshToken" class="form-element" placeholder="refreshToken" value="">
-                        </div>
-                        <div class="form-row no-padding">
-                                <i class="fa fa-user"></i>
-                                <input type="text" id="userseqno" class="form-element" placeholder="userseqno" value="">
-                        </div>
-                        
-                    </div>
-
-					<!-- 회원가입 버튼 -->
-					<div class="form-row">
-						<button id="authBtn" class="button circle block red">인증하기</button>
+				<div class="container"  id="form_area_div">
+				<div class="form-row-group with-icons">
+					<div class="form-row no-padding">
+						<i class="fa fa-user"></i>
+						<input type="text" id="userName" class="form-element" placeholder="이름을 입력하세요." value="">
 					</div>
-
-					<div class="form-divider"></div>
-					
+					<div class="form-row no-padding">
+						<i class="fa fa-envelope"></i>
+						<input type="email" id="userEmail" class="form-element" placeholder="이메일을 입력하세요." value="">
+					</div>
+					<div class="form-row no-padding">
+						<i class="fa fa-lock"></i>
+						<input type="password" id="userPassword" class="form-element" placeholder="비밀번호를 입력하세요." value="">
+					</div>
 					<div class="form-row">
 						<button id="signupBtn" class="button circle block orange">회원가입</button>
 					</div>
-
+					<!-- <div class="form-row no-padding">
+                        <i class="fa fa-user"></i>
+                        <input type="text" id="accessToken" name="aaa" class="form-element" placeholder="access 토큰" value="">
+                    </div>
+                    <div class="form-row no-padding">
+                        <i class="fa fa-user"></i>
+                        <input type="text" id="refreshToken" class="form-element" placeholder="refresh 토큰" value="">
+                    </div> 
+                    <div class="form-row no-padding">
+                        <i class="fa fa-user"></i>
+                        <input type="text" id="userseqno" class="form-element" placeholder="유저 고유번호" value="">
+                    </div>
+					<div class="form-divider"></div> -->
 					<div class="form-row txt-center mt-15">
 						Already have an account? <a href="login.html" data-loader="show">Login</a>
 					</div>
 
+					<div class="form-divider"></div>
+					<div class="form-row">
+						<button id="authBtn" class="button circle block red">오픈뱅킹 인증하기</button>
+					</div>
+				</div>
 				</div>
 			</main>
 			<!-- Page content end -->
@@ -176,38 +161,35 @@
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<!-- Template global script file. requared all pages -->
 	<script src="js/global.script.js"></script>	
-	
     <script>
-		//고객 인증서버 이동
-        $("#authBtn").click(function(){
-            var tmpWindow = window.open("about:blank");
-            tmpWindow.location = "https://testapi.openbanking.or.kr/oauth/2.0/authorize?response_type=code&client_id=q7kH44ThJwjpvNRg0BbJvE1yxvx5X53DKz1rNgPF&redirect_uri=http://localhost:3000/authResult&scope=login inquiry transfer&state=12345678901234567890123456789012&auth_type=0";
-		})
+		// 고객 인증서버 이동
+        $("#authBtn").click(function() {
+			var authURL = "https://testapi.openbanking.or.kr/oauth/2.0/authorize?response_type=code&client_id=mZDDm2gP92FqwdD248kVm83PTJnlJKDIiTwaSSFu&redirect_uri=http://localhost:8080/authResult&scope=login inquiry transfer&state=12345678901644567890123456789012&auth_type=0";
+			document.location.href = authURL;
+		});
+
 		//회원가입 ajax
-        $("#signupBtn").click(function(){
-			//form 값 가져오기
+        $("#signupBtn").click(function() {
+			// form 값 가져오기
             var name = $("#userName").val();
             var email = $("#userEmail").val();
             var password = $("#userPassword").val();
-            var accessToken = $("#accessToken").val();
-            var refreshToken = $("#refreshToken").val();
-            var userseqno = $("#userseqno").val();
+			
             $.ajax({
-                url:'http://localhost:3000/user',
+                url:'http://localhost:8080/user',
                 type : 'POST',
                 data : {
                     name : name,
                     password : password,
-                    email : email,
-                    accessToken : accessToken,
-                    refreshToken : refreshToken,
-                    userseqno : userseqno
-                  },
-                    success:function(data){
-                      if(data == 1){
-                         alert("가입 완료");
-                     }
-                  }
+					email : email,
+				},
+				success: function(data) {
+					if(data == 1) {
+						alert("가입이 완료되었습니다. 오픈뱅킹 인증을 진행해주세요.");
+					} else {
+						alert("가입 실패. 다시 시도해주세요.");
+					}
+				}
             })
         });
     </script>    

@@ -10,8 +10,6 @@ var request = require('request');
 //날씨 정보 가져오기
 request('http://www.weather.go.kr/weather/forecast/mid-term-rss3.jsp?stnld=109', function (error, response, body) {
     parser.parseString(body, function (err, jsonData) {
-        //console.log(body);
-        //console.log(jsonData);
         var resultWeather = jsonData.rss.channel[0].item[0].description[0].header[0].wf[0];
         return resultWeather;
     })
