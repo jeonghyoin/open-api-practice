@@ -71,7 +71,7 @@ app.get('/qrcode', function(req, res){
 })
 
 // qr 코드 리더기
-app.get('/qrcodeReader', function(req, res){
+app.get('/withdrawQR', function(req, res){
     res.render('qrcodeReader');
 })
 
@@ -222,8 +222,8 @@ app.post('/userData', auth, function(req, res){
             } 
         }
         request(option, function (error, response, body) {
-            var resultObject = JSON.parse(body);
-            res.json(resultObject);
+            var result = JSON.parse(body);
+            res.json(result);
         });
     });      
 })
@@ -317,11 +317,12 @@ app.post('/transaction',auth, function(req, res){
 
 // 출금 이체 - QR 결제
 app.post('/withdrawQR', auth, function(req, res){
-    var finusenum = req.body.qrFin;
-    var userId = req.decoded.userId
+    var finusenum = req.body.fin_use_num;
+    var userId = req.decoded.userId;
 
     var countnum = Math.floor(Math.random() * 1000000000) + 1;
     var transId = "T991603750U" + countnum;
+    var reqClientNum = "F000000000U" + countnum;
 
     connection.query('SELECT * FROM user WHERE id = ?', [userId], function (error, results, fields) {
         if (error) throw error;
@@ -333,29 +334,49 @@ app.post('/withdrawQR', auth, function(req, res){
                 Authorization : "Bearer " + results[0].accesstoken
             },
             json : {
-                bank_tran_id : transId,
+                // ** 거래 정보
+                // 약정 계좌/계정 구분(N: 계좌, C: 계정)
                 cntr_account_type : "N",
-                cntr_account_num : "7832932596",
-                dps_print_content : "쇼핑몰환불",
-                fintech_use_num : "199159919057870978715901",
-                wd_print_content : "쇼핑몰환불",
-                tran_amt : "1000",
-                req_client_fintech_use_num : "199159919057870978715901",
-                tran_dtime : "20190910101921",
-                req_client_name : "진상언",
-                req_client_num : "7832932596",
-                transfer_purpose : "TR"
+                // 약정 계좌 or 계정 번호
+                cntr_account_num : "5582638902",
+                // 입금계좌 인자내역
+                dps_print_content : "이용료",
+                // 출금계좌 핀테크 이용번호
+                fintech_use_num : finusenum,
+                // 거래 금액
+                tran_amt : "100000",
+                // 요청 일시
+                tran_dtime : "20200622000000",
+                // ** 요청고객 정보
+                // 요청고객 계좌번호 - 고유 번호
+                req_client_num : reqClientNum,
+                // 요청고객 핀테크 이용번호
+                req_client_bank_code : "097",
+                // 요청고객 계좌 번호
+                req_client_account_num : "", // 지움
+                // 요청고객 성명
+                req_client_name : "홍길동",
+                //이체 용도(TR: 송금, ST: 결제, RC: 충전)
+                transfer_purpose : "TR",
+                // ** 수취 고객 정보
+                // 최종 수취고객 성명
+                recv_client_name : "", // 자움
+                // 최종 수취고객 계좌 개설기관. 표준코드
+                recv_client_bank_code : "097",
+                // 최종 수취고객 계좌번호
+                recv_client_account_num : "" // 지움
             }
         }
         request(option, function (error, response, body) {
-            console.log('/withdrawQR: ' + body);
+            console.log('/withdrawQR');
+            console.log(body);
+
             var result = body;
-            res.json(result.rsp_code);
-            /* if(resultObject.rsp_code == "A0000") {
+            if(result.rsp_code == "A0000") {
                 res.json(1);
             } else {
-                res.json(resultObject.rsp_code);
-            } */
+                res.json(result.rsp_code);
+            }
         });
     });
 });

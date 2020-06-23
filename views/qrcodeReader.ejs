@@ -108,13 +108,9 @@
 			<!-- Page content start -->
 			<main>
 				<div class="container">
-                    <div class="form-divider"></div>
-                    <video id="preview" style="width: 100%; height:100%; margin-top: 25vh"  ></video>
-
+                    <video id="preview" style="width: 100%; height:100%;"></video>
 				</div>
-
 				<div class="form-divider"></div>
-
 				<footer>
 					<div class="container">
 						<ul>
@@ -131,7 +127,6 @@
 			<!-- Page content end -->
 		</div>
 	</div>
-
 	<!--Page loader DOM Elements. Requared all pages-->
 	<div class="sweet-loader">
 		<div class="box">
@@ -148,29 +143,25 @@
 	<script src="js/global.script.js"></script>
 
     <script>
-		let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-		scanner.addListener('scan', function (content) {
-        console.log(content)
-        $.ajax({
-			url: 'http://localhost:8080/withdrawQR',
-			type: 'POST',
-			headers: {
-				'x-access-token': sessionStorage.getItem('accesstoken')
-			},
-			data: {
-				qrFin : content
-			},
-			success: function (data) {
-				console.log(data);
-				if(data == 1){
-					alert('결제가 완료되었습니다.');
-				}
-				else {
-					alert('결제가 미승인되었습니다')
-				}
+		function getQueryStringObject() {
+		var a = window.location.search.substr(1).split('&');
+		if(a == "") return {};
+		var b = {};
+		for(var i = 0; i < a.length; ++i) {
+			var p = a[i].split('=', 2);
+			if (p.length == 1)
+				b[p[0]] = "";
+			else
+				b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
 			}
-    	}) });
-	
+			return b;
+		}
+		var qs = getQueryStringObject();
+
+		let scanner = new Instascan.Scanner({
+			video: document.getElementById('preview')
+		});
+
 		Instascan.Camera.getCameras().then(function (cameras) {
 			if (cameras.length > 0) {
 				scanner.start(cameras[0]);
@@ -180,7 +171,30 @@
 		}).catch(function (e) {
 			console.error(e);
 		});
+
+		scanner.addListener('scan', function(content) {
+			// TODO: qr 코드에 정보 담기
+			// content: qr code 정보
+			// qr 코드 읽기가 완료되면 요청 전송
+			$.ajax({
+				url: 'http://localhost:8080/withdrawQR',
+				type: 'POST',
+				headers: {
+					'x-access-token': sessionStorage.getItem('accesstoken')
+				},
+				data: {
+					fin_use_num : qs.fin_use_num
+				},
+				success: function(data) {
+					if(data == 1) {
+						alert('결제가 정상적으로 완료되었습니다.');
+					}
+					else {
+						alert('결제가 정상적으로 승인되지 않았습니다.');
+					}
+				}
+			});
+		});
 	</script>
 </body>
-
 </html>
