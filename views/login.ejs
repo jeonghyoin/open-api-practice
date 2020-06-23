@@ -4,24 +4,19 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
-	<title>Crypto Mobile Template</title>
-
+	<title>Login Page</title>
 	<!-- Google font file. If you want you can change. -->
 	<link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,900" rel="stylesheet">
-
 	<!-- Fontawesome font file css -->
 	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
-
 	<!-- Template global css file. Requared all pages -->
 	<link rel="stylesheet" type="text/css" href="css/global.style.css">
 </head>
 
 <body>
-	
 	<div class="wrapper">
 		<div class="nav-menu">
 			<nav class="menu">
-				
 				<!-- Menu navigation start -->
 				<div class="nav-container">
 					<ul class="main-menu">
@@ -94,6 +89,7 @@
 			<!-- Menu navigation end -->
 			</nav>
 		</div>
+
 		<div class="wrapper-inline">
 			<!-- Header area start -->
 			<header> <!-- extra class no-background -->
@@ -106,9 +102,9 @@
 				</div>
 			</header>
 			<!-- Header area end -->
+
 			<!-- Page content start -->
 			<main>
-			
 				<div class="container">
 					<div class="form-divider"></div>
 					<div class="form-row-group with-icons">
@@ -135,13 +131,11 @@
 					<div class="form-row txt-center mt-15">
 						Don't you have an account yet? <a href="/signup" data-loader="show">Sign Up</a>
 					</div>
-
 				</div>
 			</main>
 			<!-- Page content end -->
 		</div>
 	</div>
-
 
 	<!--Page loader DOM Elements. Requared all pages-->
 	<div class="sweet-loader">
@@ -154,31 +148,30 @@
 
 	<!-- JQuery library file. requared all pages -->
 	<script src="js/jquery-3.2.1.min.js"></script>
-
 	<!-- Template global script file. requared all pages -->
 	<script src="js/global.script.js"></script>
+
     <script>
-        $("#loginBtn").click(function(){
+        $("#loginBtn").click(function() {
             var email = $("#userEmail").val();
-            var password = $("#userPassword").val();
+			var password = $("#userPassword").val();
+			
             $.ajax({
                 url:'http://localhost:8080/login',
                 type : 'POST',
                 data : {
                     userEmail : email,
                     userPassword : password,
-                  },
-                    success:function(data){
-						console.log(data);
-						//세션스토리지 메인화면 이동
-                        sessionStorage.setItem('jwtToken', data);
-                        window.location = '/main'
-                  }
+                },
+                success: function(data) {
+					alert(data.message);
+					if(data.accesstoken != undefined) {
+						sessionStorage.setItem('accesstoken', data.accesstoken);
+						window.location = '/main';
+					}
+				}
             })
-
         })        
     </script>
-	
 </body>
-
 </html>

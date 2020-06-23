@@ -4,14 +4,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
-	<title>Crypto Mobile Template</title>
-
+	<title>Balance - 잔액조회</title>
 	<!-- Google font file. If you want you can change. -->
 	<link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,900" rel="stylesheet">
-
 	<!-- Fontawesome font file css -->
 	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
-
 	<!-- Template global css file. Requared all pages -->
 	<link rel="stylesheet" type="text/css" href="css/global.style.css">
 </head>
@@ -47,12 +44,11 @@
 						<li>
 							<a href="javascript:void(0);"><img src="img/content/icons/9.png" alt=""><strong>Login/Register</strong> <span class="fa fa-angle-down"></span></a>
 							<ul>
-								<li><a href="login.html" data-loader="show">Login</a></li>
-								<li><a href="signup.html" data-loader="show">Register</a></li>
+								<li><a href="login" data-loader="show">Login</a></li>
+								<li><a href="signup" data-loader="show">Register</a></li>
 								<li><a href="forgot-password.html" data-loader="show">Forgot Password</a></li>
 							</ul>
 						</li>
-						
 						<li>
 							<a href="javascript:void(0);"><img src="img/content/icons/8.png" alt=""> <strong>Wizards</strong> <span class="fa fa-angle-down"></span></a>
 							<ul>
@@ -92,6 +88,7 @@
 			<!-- Menu navigation end -->
 			</nav>
 		</div>
+
 		<div class="wrapper-inline">
 			<!-- Header area start -->
 			<header> <!-- extra class no-background -->
@@ -107,12 +104,10 @@
 			<!-- Page content start -->
 			<main>
 				<div class="container">
-					<div id="balanceText"></div>
+					<div>해당 계좌의 잔액은 <b id="balanceText"></b> 원입니다.</div>
 					<div id="transactionList"></div>
 				</div>
-
 				<div class="form-divider"></div>
-
 				<footer>
 					<div class="container">
 						<ul>
@@ -124,7 +119,6 @@
 						<p>Copyright © All Right Reserved</p>
 					</div>
 				</footer>
-
 			</main>
 			<!-- Page content end -->
 		</div>
@@ -147,9 +141,9 @@
 	<script>
 	function getQueryStringObject() {
 		var a = window.location.search.substr(1).split('&');
-		if (a == "") return {};
+		if(a == "") return {};
 		var b = {};
-		for (var i = 0; i < a.length; ++i) {
+		for(var i = 0; i < a.length; ++i) {
 			var p = a[i].split('=', 2);
 			if (p.length == 1)
 				b[p[0]] = "";
@@ -160,41 +154,20 @@
 	}
 
 	var qs = getQueryStringObject();
-	var jwtToken = sessionStorage.getItem('jwtToken');
-	$.ajax({
-		url:'http://80803000/balance',
-		type : 'POST',
-		headers : {
-			'x-access-token' : jwtToken
-		},
-		data : {
-			fin_use_num : qs.fin_use_num
-		},
-		success:function(data){
-			console.log(data);
-			$("#balanceText").text(data.balance_amt);
-		}
-	})
+	var accesstoken = sessionStorage.getItem('accesstoken');
 
+	// 잔액 조회
 	$.ajax({
-		url:'http://localhost:8080/transaction',
+		url:'http://localhost:8080/balance',
 		type : 'POST',
 		headers : {
-			'x-access-token' : jwtToken
+			'x-access-token' : accesstoken
 		},
 		data : {
 			fin_use_num : qs.fin_use_num
 		},
-		success:function(data){
-			var json = data.res_list;
-			console.log(json);
-			var res = "";
-			for (var key in json) {
-				//파싱
-				res += json[key].print_content;
-				$("#transactionList").text(res);
-			}
-			//$("#transactionList").text(data.res_list);	
+		success:function(data) {
+			$("#balanceText").text(data.balance_amt);
 		}
 	})
 	</script>

@@ -4,34 +4,27 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
-	<title>Crypto Mobile Template</title>
+	<title>Fintech Main Page</title>
 
 	<!-- Google font file. If you want you can change. -->
 	<link href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,900" rel="stylesheet">
-
 	<!-- Fontawesome font file css -->
 	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
-
 	<!-- Animate css file for css3 animations. for more : https://daneden.github.io/animate.css -->
 	<!-- Only use animate action. If you dont use animation, you don't have to add.-->
 	<link rel="stylesheet" type="text/css" href="css/animate.css">
 	<link rel="stylesheet" type="text/css" href="css/cryptocoins.css">
 	<link rel="stylesheet" type="text/css" href="plugins/c3-chart/c3.css">
-
 	<!-- Template global css file. Requared all pages -->
 	<link rel="stylesheet" type="text/css" href="css/global.style.css">
-
 	<!-- Swiper slider css file -->
 	<link rel="stylesheet" href="css/swiper.min.css">
-
 	<!--turbo slider plugin css file -->
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="plugins/turbo-slider/turbo.css">
-
 </head>
 
 <body>
-	
 	<div class="wrapper ">
 		<div class="nav-menu">
 			<nav class="menu">
@@ -107,6 +100,7 @@
 			<!-- Menu navigation end -->
 			</nav>
 		</div>
+
 		<div class="wrapper-inline">
 			<!-- Header area start -->
 			<header class="no-background"> <!-- extra class no-background -->
@@ -121,7 +115,6 @@
 					<em></em>
 					<em></em>
 				</div>
-
 			</header>
 			<!-- Header area end -->
 
@@ -213,7 +206,6 @@
 
 			<!-- Page content start -->
 			<main class="margin mt-0">
-
 				<div class="dash-balance">
 					<div class="dash-content relative">
 						<h3 class="w-text">Dashboard</h3>
@@ -222,10 +214,8 @@
 						</div>
 					</div>
 				</div>
-
 				<section class="bal-section container" id="cardList">
 				</section>
-
 				<footer>
 					<div class="container">
 						<ul>
@@ -273,18 +263,19 @@
 	<script src="js/global.script.js"></script>
 
     <script>
-        var jwtToken = sessionStorage.getItem('jwtToken')
-        fetchUserData();
+        var accesstoken = sessionStorage.getItem('accesstoken');
+		fetchUserData();
+		
         function fetchUserData(){
             $.ajax({
                 url:'http://localhost:8080/userData',
                 type : 'POST',
                 headers : {
-                    'x-access-token' : jwtToken
+                    'x-access-token': accesstoken
                 },
                 success:function(data){
                     console.log(data.res_list);
-                    for(var i=0; i < data.res_list.length; i++){
+                    for(var i=0; i < data.res_list.length; i++) {
                         $("#cardList").append(
                             '<div class="balance-card mb-15">'+
 						        '<div class="d-flex align-items-center">'+
@@ -294,19 +285,18 @@
                              		   '<p class="g-text mb-10">'+data.res_list[i].fintech_use_num+'</p>'+
                            			'</div>'+
                             		'<div class="ml-auto align-self-end">'+
-										'<a href="/balance?fin_use_num='+data.res_list[i].fintech_use_num+'">잔액조회</a>'+
-										'<a href="/qrcode?fin_use_num='+data.res_list[i].fintech_use_num+'">QR생성</a>'+
+										'<a href="/balance?fin_use_num='+data.res_list[i].fintech_use_num+'">잔액조회</a><br>'+
+										'<a href="/transaction?fin_use_num='+data.res_list[i].fintech_use_num+'">거래내역 조회</a><br>'+
+										'<a href="/qrcode?fin_use_num='+data.res_list[i].fintech_use_num+'">QR 생성</a>'+
                             		'</div>'+
                           		  '</div>'+
                            		'</div>'+
                             '</div>'
                         )
-                    }    
+                    }  
                 }
             })
-
         }
     </script>
 </body>
-
 </html>

@@ -4,14 +4,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
-	<title>Crypto Mobile Template</title>
-
+	<title>Transaction List - 거래내역 조회</title>
 	<!-- Google font file. If you want you can change. -->
 	<link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,900" rel="stylesheet">
-
 	<!-- Fontawesome font file css -->
 	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
-
 	<!-- Template global css file. Requared all pages -->
 	<link rel="stylesheet" type="text/css" href="css/global.style.css">
 </head>
@@ -20,7 +17,6 @@
 	<div class="wrapper">
 		<div class="nav-menu">
 			<nav class="menu">
-				
 				<!-- Menu navigation start -->
 				<div class="nav-container">
 					<ul class="main-menu">
@@ -48,12 +44,11 @@
 						<li>
 							<a href="javascript:void(0);"><img src="img/content/icons/9.png" alt=""><strong>Login/Register</strong> <span class="fa fa-angle-down"></span></a>
 							<ul>
-								<li><a href="login.html" data-loader="show">Login</a></li>
-								<li><a href="signup.html" data-loader="show">Register</a></li>
+								<li><a href="login" data-loader="show">Login</a></li>
+								<li><a href="signup" data-loader="show">Register</a></li>
 								<li><a href="forgot-password.html" data-loader="show">Forgot Password</a></li>
 							</ul>
 						</li>
-						
 						<li>
 							<a href="javascript:void(0);"><img src="img/content/icons/8.png" alt=""> <strong>Wizards</strong> <span class="fa fa-angle-down"></span></a>
 							<ul>
@@ -93,6 +88,7 @@
 			<!-- Menu navigation end -->
 			</nav>
 		</div>
+
 		<div class="wrapper-inline">
 			<!-- Header area start -->
 			<header> <!-- extra class no-background -->
@@ -108,13 +104,10 @@
 			<!-- Page content start -->
 			<main>
 				<div class="container">
-                    <div class="form-divider"></div>
-                    <video id="preview" style="width: 100%; height:100%; margin-top: 25vh"  ></video>
-
+					<div id="transactionList">
+                    </div>
 				</div>
-
 				<div class="form-divider"></div>
-
 				<footer>
 					<div class="container">
 						<ul>
@@ -126,7 +119,6 @@
 						<p>Copyright © All Right Reserved</p>
 					</div>
 				</footer>
-
 			</main>
 			<!-- Page content end -->
 		</div>
@@ -141,46 +133,60 @@
 		</div>
 	</div>
 
-    <script src="js/instascan.min.js"></script>
 	<!-- JQuery library file. requared all pages -->
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<!-- Template global script file. requared all pages -->
 	<script src="js/global.script.js"></script>
 
-    <script>
-		let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-		scanner.addListener('scan', function (content) {
-        console.log(content)
-        $.ajax({
-			url: 'http://localhost:8080/withdrawQR',
-			type: 'POST',
-			headers: {
-				'x-access-token': sessionStorage.getItem('accesstoken')
-			},
-			data: {
-				qrFin : content
-			},
-			success: function (data) {
-				console.log(data);
-				if(data == 1){
-					alert('결제가 완료되었습니다.');
-				}
-				else {
-					alert('결제가 미승인되었습니다')
-				}
-			}
-    	}) });
-	
-		Instascan.Camera.getCameras().then(function (cameras) {
-			if (cameras.length > 0) {
-				scanner.start(cameras[0]);
-			} else {
-				console.error('No cameras found.');
-			}
-		}).catch(function (e) {
-			console.error(e);
-		});
+	<script>
+	function getQueryStringObject() {
+		var a = window.location.search.substr(1).split('&');
+		if(a == "") return {};
+		var b = {};
+		for(var i = 0; i < a.length; ++i) {
+			var p = a[i].split('=', 2);
+			if (p.length == 1)
+				b[p[0]] = "";
+			else
+				b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+		}
+		return b;
+	}
+
+	var qs = getQueryStringObject();
+	var accesstoken = sessionStorage.getItem('accesstoken');
+
+	// 거래 내역 조회
+	$.ajax({
+		url:'http://localhost:8080/transaction',
+		type : 'POST',
+		headers : {
+			'x-access-token' : accesstoken
+		},
+		data : {
+			fin_use_num : qs.fin_use_num
+		},
+		success: function(data) {
+            for(var i=0; i < data.res_list.length; i++) {
+                $("#transactionList").append(
+                    '<div class="balance-card mb-15">'+
+						'<div class="d-flex align-items-center">'+
+	                	'<div class="d-flex flex-grow">'+
+                    		'<div class="mr-auto">' +
+                        		'<h3 class="b-val">'+'['+data.res_list[i].inout_type+']'+data.res_list[i].print_content+'</h3>'+
+                                 '<p class="g-text mb-10">'+data.res_list[i].tran_date+' '+data.res_list[i].tran_time+'</p>'+
+                                 '<p class="g-text mb-10">'+data.res_list[i].tran_type+'</p>'+
+                                 '<p class="g-text mb-10">'+data.res_list[i].branch_name+'</p>'+
+                                 '<b class="g-text mb-10">'+'거래 금액: '+data.res_list[i].tran_amt+'</b><br>'+
+                                 '<b class="g-text mb-10">'+'거래 후 잔액'+data.res_list[i].after_balance_amt+'</b>'+
+                        	'</div>'+
+                  		  '</div>'+
+                   		'</div>'+
+                    '</div>'
+                )
+            }
+		}
+    })
 	</script>
 </body>
-
 </html>
